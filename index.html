@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profesor de Portugués</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png">
+<link rel="icon" href="/icon-512.png" sizes="512x512" type="image/png">
+<meta name="theme-color" content="#2e7d32">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Portugués">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<style>
+  :root{
+    --primary:#2e7d32;
+    --primary-dark:#1b5e20;
+    --accent:#ffb300;
+    --bg:#f7faf7;
+    --card:#ffffff;
+    --text:#1f2933;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --correct:#2e7d32;
+    --wrong:#c62828;
+    --shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;
+    min-height:100vh;
+  }
+  /* ---------- Header ---------- */
+  header{
+    background:var(--primary);color:#fff;padding:1.25rem 1rem;
+    text-align:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:50;
+  }
+  header h1{font-size:1.5rem;font-weight:700;letter-spacing:.3px}
+  header p{font-size:.9rem;opacity:.9;margin-top:.25rem}
+  .progress-bar{height:8px;background:rgba(255,255,255,.35);border-radius:4px;margin-top:.75rem;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .4s ease}
+
+  /* ---------- Layout ---------- */
+  .container{max-width:760px;margin:0 auto;padding:1.5rem 1rem 4rem}
+
+  /* ---------- Home ---------- */
+  .home-card{background:var(--card);border-radius:16px;padding:2rem;box-shadow:var(--shadow);text-align:center;margin-bottom:1rem}
+  .home-card h2{font-size:1.35rem;margin-bottom:.5rem}
+  .home-card p{color:var(--muted);margin-bottom:1.5rem}
+  .btn-start{
+    display:inline-flex;align-items:center;gap:.5rem;
+    background:var(--primary);color:#fff;border:none;padding:.85rem 1.5rem;
+    border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s,background .15s
+  }
+  .btn-start:hover{background:var(--primary-dark);transform:translateY(-1px)}
+  .btn-start:active{transform:translateY(0)}
+  .plan-preview{margin-top:1.5rem;text-align:left;display:inline-block}
+  .plan-preview h3{font-size:1rem;margin-bottom:.5rem;color:var(--primary-dark)}
+  .plan-preview ul{list-style:disc inside;padding-left:.5rem;color:var(--muted);font-size:.9rem}
+  .plan-preview li{margin-bottom:.35rem}
+
+  /* ---------- Lesson ---------- */
+  .lesson-card{background:var(--card);border-radius:16px;padding:1.75rem;box-shadow:var(--shadow)}
+  .lesson-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;gap:1rem}
+  .lesson-meta{font-size:.85rem;color:var(--muted)}
+  .lesson-title{font-size:1.4rem;font-weight:700;margin-bottom:.25rem}
+  .lesson-sub{font-size:1rem;color:var(--primary-dark);font-weight:600;margin-bottom:1rem}
+  .section{margin-bottom:1.5rem}
+  .section h4{font-size:1.05rem;color:var(--primary);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+  .section h4 span::before{content:"➤";color:var(--accent)}
+  /* audio button */
+  .audio-btn{
+    background:#fff;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:1rem;vertical-align:middle;margin-left:.5rem;line-height:1
+  }
+  .audio-btn:hover{background:#e8f5e9;border-color:var(--primary)}
+  .audio-btn:active{transform:scale(.92)}
+  
+  /* install banner */
+  .install-banner{
+    background:#fff3e0;border:1px solid #ffb74d;border-radius:10px;padding:.85rem 1rem;margin:1rem 0;display:flex;align-items:center;gap:.8rem;justify-content:space-between
+  }
+  .install-banner .install-text{font-size:.9rem;color:#b26a00}
+  .btn-install{background:#ffb74d;color:#000;border:none;padding:.55rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer}
+  .btn-install:hover{background:#ffa726}
+
+  p{margin-bottom:.75rem}
+  ul{padding-left:1.1rem;margin-bottom:.75rem}
+  ul li{margin-bottom:.4rem}
+
+  /* examples */
+  .example{background:#f1f8f1;border-left:4px solid var(--primary);padding:.75rem 1rem;margin:.5rem 0;border-radius:0 8px 8px 0}
+  .example .pt{font-weight:700;color:var(--primary-dark)}
+  .example .es{color:var(--muted);font-size:.95rem}
+  .example .es::before{content:"(es) "}
+
+  /* pronunciation */
+  .pron{background:#fff7e6;border-left:4px solid var(--accent);padding:.75rem 1rem;margin:.5rem 0;border-radius:0 8px 8px 0}
+  .pron strong{color:#b26a00}
+
+  /* tip */
+  .tip{background:#eef6ff;border-left:4px solid #1976d2;padding:.75rem 1rem;margin:.5rem 0;border-radius:0 8px 8px 0;color:#174a7e;font-size:.95rem}
+
+  /* ---------- Exercise ---------- */
+  .exercise{background:#fbfbfb;border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-top:1rem}
+  .exercise h4{margin-bottom:.75rem;color:var(--primary-dark)}
+  .question{font-size:1.05rem;margin-bottom:1rem;font-weight:600}
+  .options{display:grid;gap:.6rem}
+  .opt{
+    display:flex;align-items:center;gap:.75rem;
+    border:1px solid var(--border);background:#fff;border-radius:10px;padding:.7rem 1rem;
+    cursor:pointer;transition:border .15s,box-shadow .15s,background .15s
+  }
+  .opt:hover{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,125,50,.12)}
+  .opt input{accent-color:var(--primary)}
+  .opt .letter{font-weight:700;color:var(--primary);font-size:.95rem}
+  .opt .text{flex:1}
+  .opt.correct{background:#e8f5e9;border-color:var(--correct)}
+  .opt.wrong{background:#ffebee;border-color:var(--wrong)}
+  .opt.disabled{cursor:default;opacity:.85}
+  .feedback{margin-top:.8rem;font-weight:600;display:none}
+  .feedback.ok{color:var(--correct)}
+  .feedback.bad{color:var(--wrong)}
+  .explain{margin-top:.6rem;font-size:.92rem;color:var(--muted);display:none}
+
+  /* ---------- Action row ---------- */
+  .actions{display:flex;gap:.75rem;margin-top:1.5rem}
+  .btn{
+    flex:1;border:none;padding:.85rem 1rem;border-radius:10px;font-weight:700;
+    font-size:.95rem;cursor:pointer;transition:background .15s,transform .15s
+  }
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:var(--shadow)}
+  .btn-primary:not(:disabled):hover{background:var(--primary-dark)}
+  .btn-outline{background:#fff;border:1px solid var(--border);color:var(--text)}
+  .btn-outline:hover{border-color:var(--primary)}
+  .btn-retry{background:#fff3e0;border:1px solid #ffb74d;color:#b26a00}
+  .btn-retry:hover{background:#ffe0b2}
+
+  .locked{opacity:.6;pointer-events:none}
+  .hidden{display:none!important}
+
+  /* ---------- Toast ---------- */
+  .toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--text);color:#fff;
+    padding:.85rem 1.1rem;border-radius:10px;box-shadow:var(--shadow);transform:translateY(120px);
+    transition:transform .3s ease;z-index:100;font-size:.9rem;opacity:0}
+  .toast.show{transform:translateY(0);opacity:1}
+
+  /* ---------- Complete modal ---------- */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+  .modal-overlay.open{opacity:1;pointer-events:auto}
+  .modal{background:#fff;border-radius:16px;padding:2rem;max-width:440px;width:90%;text-align:center;transform:translateY(20px);transition:transform .3s}
+  .modal-overlay.open .modal{transform:translateY(0)}
+  .modal h3{font-size:1.25rem;margin-bottom:.5rem}
+  .modal p{color:var(--muted);margin-bottom:1.5rem}
+  .modal-actions{display:flex;gap:.75rem}
+
+  /* ---------- Footer ---------- */
+  footer{text-align:center;padding:2rem 1rem;color:var(--muted);font-size:.85rem}
+  footer .heart{color:#e53935}
+  @media(max-width:480px){header h1{font-size:1.2rem}.lesson-title{font-size:1.2rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🇧🇷 Profesor de Portugués</h1>
+  <p>Curso para hispanohablantes — desde cero, una lección a la vez</p>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+</header>
+
+<div class="container">
+
+  <!-- Banner de instalación PWA -->
+  <div class="install-banner hidden" id="installBanner">
+    <div class="install-text">📱 ¿Instalar "Profesor de Portugués" como aplicación?</div>
+    <button class="btn-install" id="btnInstall">Instalar</button>
+  </div>
+
+  <!-- Home / Plan -->
+  <section id="home" class="home-card">
+    <h2>Tu plan de aprendizaje de portugués</h2>
+    <p>No necesitas saber nada de portugués. Empezamos desde lo más básico y avanzamos paso a paso.</p>
+    <button class="btn-start" id="btnStart">Comenzar desde la lección 1</button>
+    <div class="plan-preview" id="planPreview">
+      <h3>Módulos del curso</h3>
+      <ul id="planList"></ul>
+    </div>
+  </section>
+
+  <!-- Lesson -->
+  <section id="lessonView" class="hidden lesson-card">
+    <div class="lesson-header">
+      <div class="lesson-meta" id="lessonMeta">Módulo 1 · Lección 1 de 24</div>
+      <button class="btn btn-outline" id="btnBackHome" style="font-size:.8rem;padding:.5rem 1rem">Volver al inicio</button>
+    </div>
+    <h2 class="lesson-title" id="lessonTitle">Lección</h2>
+    <div class="lesson-sub" id="lessonSub"></div>
+
+    <div id="lessonContent"></div>
+
+    <div class="exercise" id="exerciseBox" style="display:none">
+      <h4>✍️ Ejercicio corto</h4>
+      <div class="question" id="exQuestion"></div>
+      <div class="options" id="exOptions"></div>
+      <div class="feedback" id="exFeedback"></div>
+      <div class="explain" id="exExplain"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-outline" id="btnPrev" disabled>Lección anterior</button>
+      <button class="btn btn-primary" id="btnNext">Siguiente lección</button>
+    </div>
+    <p id="lockHint" style="margin-top:.7rem;color:var(--muted);font-size:.9rem;display:none">
+      Completa el ejercicio para desbloquear la siguiente lección.
+    </p>
+  </section>
+
+  <!-- Completion modal -->
+  <div class="modal-overlay" id="completeModal">
+    <div class="modal">
+      <h3 id="modalTitle">¡Lección completada!</h3>
+      <p id="modalText">Has comprendido esta lección. ¡Avanzamos!</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modalContinue">Siguiente lección</button>
+        <button class="btn btn-outline" id="modalHome">Volver al inicio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Hecho con <span class="heart">❤️</span> para aprender portugués desde cero · Tu progreso se guarda automáticamente en este navegador.
+</footer>
+
+<script>
+/* ============================================================
+   DATOS DEL CURSO — Portugués para hispanohablantes (nivel 0)
+   ============================================================ */
+const MODULES = [
+  {
+    id: 'm1', title: 'Módulo 1: El alfabeto y la pronunciación',
+    color: '#2e7d32',
+    lessons: [
+      {
+        id: 'l1', title: 'El alfabeto portugués',
+        sub: 'Las letras y cómo se pronuncian',
+        theory: [
+          { type: 'text', content: 'El alfabeto portugués tiene 26 letras, igual que el español. La mayoría suenan muy parecido, pero hay algunas diferencias clave que debes conocer desde el inicio.' },
+          { type: 'text', content: 'En portugués de Brasil (el que aprenderemos aquí), las letras suelen abrirse más que en español.' }
+        ],
+        examples: [
+          { pt: 'A', es: 'como en "casa"', note: 'se abre un poco más' },
+          { pt: 'E', es: 'como en "mesa"', note: 'al final de palabra suena como "i"' },
+          { pt: 'O', es: 'como en "oso"', note: 'al final suena como "u"' }
+        ],
+        pronunciation: 'Tip: en portugués se pronuncian las letras con la boca un poco más abierta que en español.',
+        exercise: {
+          q: '¿Cómo se llama el idioma que estamos aprendiendo en este curso?',
+          options: ['Español','Portugués','Inglés','Francés'],
+          answer: 1,
+          explain: 'Estamos aprendiendo portugués, el idioma oficial de Brasil y Portugal.'
+        }
+      },
+      {
+        id: 'l2', title: 'Vocales abiertas y cerradas',
+        sub: 'a, e, i, o, u y sus sonidos',
+        theory: [
+          { type: 'text', content: 'Las vocales <strong>a, i, u</strong> suenan casi igual que en español. Las vocales <strong>e</strong> y <strong>o</strong> tienen dos sonidos: abierto y cerrado, y esto cambia el significado de las palabras.' },
+          { type: 'text', content: 'La <strong>e</strong> puede sonar como "e" de "mesa" (cerrada) o como "e" más abierta. La <strong>o</strong> puede sonar como "o" de "oso" o más abierta, casi como "a".' }
+        ],
+        examples: [
+          { pt: 'casa', es: 'casa', note: 'a abierta' },
+          { pt: 'mesa', es: 'mesa', note: 'e cerrada' },
+          { pt: 'povo', es: 'pueblo', note: 'o cerrado' }
+        ],
+        pronunciation: 'No exageres la apertura. En Brasil las vocales suenan suaves y melódicas.',
+        exercise: {
+          q: '¿Qué vocales suenan casi igual que en español?',
+          options: ['solo la a','a, e, i, o, u','a, i, u','solo la o'],
+          answer: 2,
+          explain: 'La a, la i y la u se pronuncian casi igual que en español. La e y la o varían entre abierto y cerrado.'
+        }
+      },
+      {
+        id: 'l3', title: 'Consonantes especiales: ç, lh, nh, rr',
+        sub: 'Sonidos que no existen o suenan distinto',
+        theory: [
+          { type: 'text', content: 'La <strong>ç</strong> (c-cedilla) siempre suena como "s" suave, igual que en español antes de e/i (por ejemplo: "ça" = "esa").' },
+          { type: 'text', content: '<strong>lh</strong> suena como la "ll" española suave (como en "millo" en algunos lugares) o como la "lli" de "millón". <strong>nh</strong> suena como la "ñ" española.' },
+          { type: 'text', content: 'La <strong>rr</strong> entre vocales suena más fuerte, como una "r" vibrante española (como en "perro").' }
+        ],
+        examples: [
+          { pt: 'ça', es: 'eso / esta', note: 'ç = s suave' },
+          { pt: 'mulher', es: 'mujer', note: 'lh = ll suave' },
+          { pt: 'senhor', es: 'señor', note: 'nh = ñ' },
+          { pt: 'carro', es: 'carro', note: 'rr = r fuerte' }
+        ],
+        pronunciation: 'La "nh" es idéntica a la "ñ" española: señor = senhor.',
+        exercise: {
+          q: '¿Cómo suena "nh" en portugués?',
+          options: ['como la n','como la ñ','como la m','como la l'],
+          answer: 1,
+          explain: 'Nh suena exactamente como la ñ española: senhor = señor.'
+        }
+      },
+      {
+        id: 'l4', title: 'Nasalidad: ã, õ, m, n al final',
+        sub: 'Sonidos por la nariz',
+        theory: [
+          { type: 'text', content: 'El portugués usa sonidos nasales. Las letras <strong>ã</strong> y <strong>õ</strong> se pronuncian pasando el aire por la nariz, algo entre una vocal y una "n" suave sin cerrar completamente la boca.' },
+          { type: 'text', content: 'Una "m" o "n" al final de palabra (o antes de consonante) suele nasalizar la vocal anterior en lugar de sonar como consonante completa.' }
+        ],
+        examples: [
+          { pt: 'pão', es: 'pan', note: 'ã nasal' },
+          { pt: 'irmão', es: 'hermano', note: 'ão = aón nasal' },
+          { pt: 'bom', es: 'bueno', note: 'm final nasaliza' }
+        ],
+        pronunciation: 'Imagina que dices la vocal con la nariz ligeramente. No hagas una "n" fuerte al final.',
+        exercise: {
+          q: '¿Qué significa "pão" en español?',
+          options: ['pez','pan','pez (pez)','país'],
+          answer: 1,
+          explain: 'Pão significa pan. La "ã" lo hace sonar nasal, parecido a "paong" suave.'
+        }
+      },
+      {
+        id: 'l5', title: 'Acento y dónde llevar el énfasis',
+        sub: 'Palabras agudas, graves y esdrújulas',
+        theory: [
+          { type: 'text', content: 'En portugués, la mayoría de las palabras llevan el acento en la penúltima sílaba (como "ca-sa"), igual que las graves en español.' },
+          { type: 'text', content: 'Cuando el acento va en otra sílaba o para diferenciar palabras, se usa acento gráfico: <strong>á, â, à, é, ê, í, ó, ô, ú</strong>. La tilde (~) en ã/õ también marca nasalidad.' }
+        ],
+        examples: [
+          { pt: 'português', es: 'portugués', note: 'acento en la última' },
+          { pt: 'café', es: 'café', note: 'agudo con acento' },
+          { pt: 'jovem', es: 'joven', note: 'penúltima sin marca' }
+        ],
+        pronunciation: 'El portugués suena más "cantadito" que el español. No tengas miedo de subir y bajar el tono.',
+        exercise: {
+          q: '¿En qué sílaba va el acento de "café"?',
+          options: ['primera','segunda (última)','tercera','no tiene'],
+          answer: 1,
+          explain: 'Café es agudo: el acento va en la última sílaba y lleva marca gráfica.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'm2', title: 'Módulo 2: Saludos y presentaciones',
+    color: '#1565c0',
+    lessons: [
+      {
+        id: 'l6', title: 'Saludos básicos',
+        sub: 'olá, bom dia, boa tarde, boa noite',
+        theory: [
+          { type: 'text', content: '<strong>Olá</strong> = hola. Se usa en cualquier momento.' },
+          { type: 'text', content: '<strong>Bom dia</strong> = buenos días (por la mañana). <strong>Boa tarde</strong> = buenas tardes. <strong>Boa noite</strong> = buenas noches / buenas tardes (al anochecer).' }
+        ],
+        examples: [
+          { pt: 'Olá, tudo bem?', es: 'Hola, ¿todo bien?', note: 'saludo informal común' },
+          { pt: 'Bom dia, professor!', es: '¡Buenos días, profesor!', note: 'matutino' },
+          { pt: 'Boa noite.', es: 'Buenas noches.', note: 'noche / despedida nocturna' }
+        ],
+        pronunciation: 'Bom dia se dice algo como "bong dia": la m al final nasaliza la o.',
+        exercise: {
+          q: '¿Cómo dices "buenos días" en portugués?',
+          options: ['Boa tarde','Bom dia','Boa noite','Olá'],
+          answer: 1,
+          explain: 'Bom dia = buenos días.'
+        }
+      },
+      {
+        id: 'l7', title: 'Presentarse: eu me chamo',
+        sub: 'decir tu nombre y preguntar el del otro',
+        theory: [
+          { type: 'text', content: 'Para decir tu nombre usas <strong>Eu me chamo ...</strong> (me llamo...). Para preguntar: <strong>Como você se chama?</strong> (¿Cómo te llamas?).' },
+          { type: 'text', content: 'El pronombre <strong>você</strong> = usted/tú (segunda persona). En Brasil se usa mucho en casi todas las situaciones.' }
+        ],
+        examples: [
+          { pt: 'Eu me chamo Ana.', es: 'Me llamo Ana.', note: 'presentarse' },
+          { pt: 'Como você se chama?', es: '¿Cómo te llamas?', note: 'preguntar nombre' },
+          { pt: 'Prazer em conhecê-lo.', es: 'Mucho gusto.', note: 'al conocer a alguien' }
+        ],
+        pronunciation: 'Chamo suena como "shamo" en Brasil (la ch antes de a/o/u suena como "sh").',
+        exercise: {
+          q: '¿Qué significa "Eu me chamo Ana"?',
+          options: ['Me llamo Ana','Ella se llama Ana','Vivo en Ana','Tengo Ana'],
+          answer: 0,
+          explain: 'Eu me chamo = me llamo.'
+        }
+      },
+      {
+        id: 'l8', title: '¿Cómo estás?: Tudo bem?',
+        sub: 'preguntar y responder cómo va todo',
+        theory: [
+          { type: 'text', content: '<strong>Tudo bem?</strong> = ¿Todo bien? / ¿Cómo estás?. Es la forma más común de preguntar cómo va alguien.' },
+          { type: 'text', content: 'Respuestas típicas: <strong>Tudo bem.</strong> (Todo bien), <strong>Estou bem.</strong> (Estoy bien), <strong>E você?</strong> (¿Y tú?).' }
+        ],
+        examples: [
+          { pt: 'Tudo bem?', es: '¿Todo bien?', note: 'pregunta estándar' },
+          { pt: 'Tudo bem, obrigado.', es: 'Todo bien, gracias.', note: 'respuesta positiva' },
+          { pt: 'E você, como está?', es: '¿Y tú, cómo estás?', note: 'devuelve la pregunta' }
+        ],
+        pronunciation: 'Obrigado se dice si eres hombre; <strong>obrigada</strong> si eres mujer (el adjetivo concuerda con quien habla).',
+        exercise: {
+          q: 'Una mujer dice "gracias" en portugués como:',
+          options: ['obrigado','obrigada','valeu','por favor'],
+          answer: 1,
+          explain: 'Las mujeres dicen obrigada; los hombres, obrigado.'
+        }
+      },
+      {
+        id: 'l9', title: 'Nacionalidades y profesiones',
+        sub: 'de dónde eres y a qué te dedicas',
+        theory: [
+          { type: 'text', content: 'Para decir tu nacionalidad: <strong>Eu sou brasileiro/brasileira</strong> (soy brasileño/a). Para la profesión: <strong>Eu sou ...</strong> (soy ...).' },
+          { type: 'text', content: 'En portugués no se usa artículo antes de la profesión después de ser: dices "eu sou professor", no "eu sou um professor" (en este contexto).' }
+        ],
+        examples: [
+          { pt: 'Eu sou mexicana.', es: 'Soy mexicana.', note: 'nacionalidad femenina' },
+          { pt: 'Ele é professor.', es: 'Él es profesor.', note: 'ser + profesión' },
+          { pt: 'Eu sou de Venezuela.', es: 'Soy de Venezuela.', note: 'origen con "de"' }
+        ],
+        pronunciation: 'Brasileiro se aproxima a "bra-si-lei-ro" con la r suave al final.',
+        exercise: {
+          q: '¿Cómo dices "soy profesor" en portugués?',
+          options: ['Eu estou professor','Eu sou professor','Eu sou um professor','Eu vou professor'],
+          answer: 1,
+          explain: 'Ser + profesión sin artículo: eu sou professor.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'm3', title: 'Módulo 3: Artículos, género y número',
+    color: '#7b1fa2',
+    lessons: [
+      {
+        id: 'l10', title: 'Artículos definidos: o, a, os, as',
+        sub: 'el, la, los, las en portugués',
+        theory: [
+          { type: 'text', content: 'Los artículos definidos son: <strong>o</strong> (masculino singular), <strong>a</strong> (femenino singular), <strong>os</strong> (masculino plural), <strong>as</strong> (femenino plural).' },
+          { type: 'text', content: 'Se usan mucho más que en español, también con nombres propios y antes de posesivos en Brasil.' }
+        ],
+        examples: [
+          { pt: 'o livro', es: 'el libro', note: 'masculino' },
+          { pt: 'a caneta', es: 'la pluma', note: 'femenino' },
+          { pt: 'os livros', es: 'los libros', note: 'plural masculino' },
+          { pt: 'as canetas', es: 'las plumas', note: 'plural femenino' }
+        ],
+        pronunciation: 'Os y as suenan con s suave al final: "oosh", "aash".',
+        exercise: {
+          q: '¿Cuál es el artículo femenino plural?',
+          options: ['o','a','os','as'],
+          answer: 3,
+          explain: 'As es femenino plural (las).'
+        }
+      },
+      {
+        id: 'l11', title: 'Género de los sustantivos',
+        sub: 'masculino y femenino, semejanzas con el español',
+        theory: [
+          { type: 'text', content: 'Casi todo lo que es masculino en español es masculino en portugués, y lo femenino igual. Termina en <strong>-o</strong> suele ser masculino; en <strong>-a</strong>, femenino.' },
+          { type: 'text', content: 'Algunas excepciones comunes: <strong>o problema</strong> (el problema, masculino), <strong>a mão</strong> (la mano, femenina).' }
+        ],
+        examples: [
+          { pt: 'o menino', es: 'el niño', note: '-o masculino' },
+          { pt: 'a menina', es: 'la niña', note: '-a femenino' },
+          { pt: 'o problema', es: 'el problema', note: 'excepción' },
+          { pt: 'a mão', es: 'la mano', note: 'excepción' }
+        ],
+        pronunciation: 'Mão suena como "mown" nasal (mano).',
+        exercise: {
+          q: '¿Cuál es femenino: "a mão"?',
+          options: ['Verdadero','Falso'],
+          answer: 0,
+          explain: 'Verdadero: a mão = la mano, es femenino aunque termine en ão.'
+        }
+      },
+      {
+        id: 'l12', title: 'Plural de los sustantivos',
+        sub: 'cómo formar el plural',
+        theory: [
+          { type: 'text', content: 'Si termina en vocal, añade <strong>-s</strong>: livro → livros. Si termina en <strong>-s</strong> o <strong>-m</strong> no cambia en plural (solo el artículo): o papel → os papéis.' },
+          { type: 'text', content: 'Si termina en <strong>-m</strong>, el plural cambia a <strong>-ns</strong>: homem → homens.' }
+        ],
+        examples: [
+          { pt: 'o livro / os livros', es: 'el libro / los libros', note: '+s' },
+          { pt: 'a cidade / as cidades', es: 'la ciudad / las ciudades', note: '-e + s' },
+          { pt: 'o homem / os homens', es: 'el hombre / los hombres', note: '-m → -ns' }
+        ],
+        pronunciation: 'Livros suena como "livruush" (s suave final).',
+        exercise: {
+          q: 'Plural de "cidade":',
+          options: ['cidades','cidade','cidadens','cidadez'],
+          answer: 0,
+          explain: 'Termina en vocal (e), así que le añades -s: cidades.'
+        }
+      },
+      {
+        id: 'l13', title: 'Artículos indefinidos: um, uma, uns, umas',
+        sub: 'un, una, unos, unas',
+        theory: [
+          { type: 'text', content: '<strong>Um</strong> (masculino) y <strong>uma</strong> (femenino) = un/una. Plural: <strong>uns</strong> y <strong>umas</strong> = unos/unas.' },
+          { type: 'text', content: 'Se usan para hablar de algo no específico: "um livro" = un libro (cualquiera).' }
+        ],
+        examples: [
+          { pt: 'um menino', es: 'un niño', note: 'masculino' },
+          { pt: 'uma menina', es: 'una niña', note: 'femenino' },
+          { pt: 'uns amigos', es: 'unos amigos', note: 'plural masc.' },
+          { pt: 'umas amigas', es: 'unas amigas', note: 'plural fem.' }
+        ],
+        pronunciation: 'Um suena como "ung" nasal, no se pronuncia la m al final.',
+        exercise: {
+          q: '¿Qué significa "uma caneta"?',
+          options: ['una pluma','un libro','unas plumas','el bolígrafo'],
+          answer: 0,
+          explain: 'Uma = una (femenino), caneta = pluma.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'm4', title: 'Módulo 4: Ser y Estar',
+    color: '#b26a00',
+    lessons: [
+      {
+        id: 'l14', title: 'Verbo SER (presente)',
+        sub: 'eu sou, você é, ele/ela é',
+        theory: [
+          { type: 'text', content: '<strong>Ser</strong> se usa para características permanentes: nombre, nacionalidad, profesión, hora, origen.' },
+          { type: 'text', content: 'Conjugación presente: eu sou / você é / ele, ela é / nós somos / vocês são / eles, elas são.' }
+        ],
+        examples: [
+          { pt: 'Eu sou ana.', es: 'Yo soy Ana.', note: 'nombre' },
+          { pt: 'Você é brasileira.', es: 'Tú eres brasileña.', note: 'nacionalidad' },
+          { pt: 'Ele é professor.', es: 'Él es profesor.', note: 'profesión' },
+          { pt: 'Nós somos de México.', es: 'Somos de México.', note: 'origen' }
+        ],
+        pronunciation: 'Sou suena como "so" suave (no se pronuncia la u final fuerte).',
+        exercise: {
+          q: '¿Cómo dices "ella es profesora"?',
+          options: ['Ela é professora','Ela está professora','Ela sou professora','Ela ser professora'],
+          answer: 0,
+          explain: 'Ele/ela é = él/ella es.'
+        }
+      },
+      {
+        id: 'l15', title: 'Verbo ESTAR (presente)',
+        sub: 'eu estou, você está',
+        theory: [
+          { type: 'text', content: '<strong>Estar</strong> se usa para estados temporales, emociones, ubicación y lo que está pasando ahora.' },
+          { type: 'text', content: 'Conjugación: eu estou / você está / ele, ela está / nós estamos / vocês estão / eles, elas están.' }
+        ],
+        examples: [
+          { pt: 'Eu estou bem.', es: 'Estoy bien.', note: 'estado' },
+          { pt: 'Você está em casa.', es: 'Estás en casa.', note: 'ubicación' },
+          { pt: 'Eles estão aqui.', es: 'Están aquí.', note: 'lugar' }
+        ],
+        pronunciation: 'Estou suena como "estó" (ou suave).',
+        exercise: {
+          q: '¿Cuál verbo usas para decir dónde estás?',
+          options: ['ser','estar','tener','ir'],
+          answer: 1,
+          explain: 'La ubicación se expresa con estar: você está em casa.'
+        }
+      },
+      {
+        id: 'l16', title: 'SER vs ESTAR',
+        sub: 'cuándo usar cada uno',
+        theory: [
+          { type: 'text', content: 'Usa <strong>ser</strong> para lo permanente (ser de algún lugar, ser médico, ser alto). Usa <strong>estar</strong> para lo temporal o cambiante (estar feliz, estar cansado, estar en la playa).' },
+          { type: 'text', content: 'Pista: si puedes sustituirlo por "estoy/siendo" en un momento, usa estar. Si es una definición, usa ser.' }
+        ],
+        examples: [
+          { pt: 'Eu sou mexicano.', es: 'Soy mexicano (permanente).', note: 'ser' },
+          { pt: 'Eu estou cansado.', es: 'Estoy cansado (temporal).', note: 'estar' },
+          { pt: 'O café está quente.', es: 'El café está caliente.', note: 'estado temporal' }
+        ],
+        pronunciation: 'Cansado: hombre dice cansado, mujer dice cansada (concuerda).',
+        exercise: {
+          q: '¿"Estoy feliz" usa ser o estar?',
+          options: ['ser','estar','ambos','ninguno'],
+          answer: 1,
+          explain: 'Felicidad es un estado temporal: estar (eu estou feliz).'
+        }
+      }
+    ]
+  },
+  {
+    id: 'm5', title: 'Módulo 5: Verbos regulares en presente',
+    color: '#c62828',
+    lessons: [
+      {
+        id: 'l17', title: 'Verbos en -AR (presente)',
+        sub: 'falar, estudar, trabalhar',
+        theory: [
+          { type: 'text', content: 'La mayoría de los verbos terminan en <strong>-ar</strong>. Para conjugar, quitas el -ar y le añades: -o, -a, -a, -amos, -am, -am.' },
+          { type: 'text', content: 'Ejemplo hablar (falar): eu falo / você fala / ele fala / nós falamos / vocês falam / eles falam.' }
+        ],
+        examples: [
+          { pt: 'Eu falo português.', es: 'Hablo portugués.', note: 'falar' },
+          { pt: 'Você estuda muito.', es: 'Estudias mucho.', note: 'estudar' },
+          { pt: 'Nós trabalhamos aqui.', es: 'Trabajamos aquí.', note: 'trabalhar' }
+        ],
+        pronunciation: 'Falo suena como "falo" con o abierta al final.',
+        exercise: {
+          q: '¿Cómo dices "tú hablas" (falar)?',
+          options: ['eu falo','você fala','nós falamos','eles falam'],
+          answer: 1,
+          explain: 'Você = usted/tú, conjugación terza persona: fala.'
+        }
+      },
+      {
+        id: 'l18', title: 'Verbos en -ER y -IR',
+        sub: 'comer, viver, abrir',
+        theory: [
+          { type: 'text', content: 'Verbos en <strong>-er</strong>: como (comer) → eu como / você come / ele come / nós comemos / vocês comem / eles comem.' },
+          { type: 'text', content: 'Verbos en <strong>-ir</strong>: abro (abrir) → eu abro / você abre / ele abre / nós abrimos / vocês abrem / eles abrem.' }
+        ],
+        examples: [
+          { pt: 'Eu como pão.', es: 'Como pan.', note: 'comer' },
+          { pt: 'Você vive no Brasil.', es: 'Vives en Brasil.', note: 'viver' },
+          { pt: 'Nós abrimos a porta.', es: 'Abrimos la puerta.', note: 'abrir' }
+        ],
+        pronunciation: 'Pão suena nasal (pan). Comer se dice como "cómer".',
+        exercise: {
+          q: '¿Qué significa "comemos"?',
+          options: ['comemos','comí','comerán','coman'],
+          answer: 0,
+          explain: 'Comemos (nós comemos) = comemos.'
+        }
+      },
+      {
+        id: 'l19', title: 'Irregulares importantes: ter, ir, estar',
+        sub: 'tener, ir y estar (repaso irregular)',
+        theory: [
+          { type: 'text', content: '<strong>Ter</strong> = tener: eu tenho / você tem / ele tem / nós temos / vocês têm / eles têm.' },
+          { type: 'text', content: '<strong>Ir</strong> = ir: eu vou / você vai / ele vai / nós vamos / vocês vão / eles vão.' },
+          { type: 'text', content: 'Estar ya lo conocemos: estou, está, estamos, estão.' }
+        ],
+        examples: [
+          { pt: 'Eu tenho duas irmãs.', es: 'Tengo dos hermanas.', note: 'ter' },
+          { pt: 'Você vai à escola.', es: 'Vas a la escuela.', note: 'ir' },
+          { pt: 'Nós vamos ao parque.', es: 'Vamos al parque.', note: 'ir' }
+        ],
+        pronunciation: 'Tenho suena como "tengu" suave (nh nasal). Vou = "vou".',
+        exercise: {
+          q: '¿Qué significa "tenho"?',
+          options: ['tengo','vienes','va','estoy'],
+          answer: 0,
+          explain: 'Tenho = tengo (verbo ter).'
+        }
+      }
+    ]
+  },
+  {
+    id: 'm6', title: 'Módulo 6: Pronombres y posesivos',
+    color: '#00695c',
+    lessons: [
+      {
+        id: 'l20', title: 'Pronombres personales sujetos',
+        sub: 'eu, você, ele, ela, nós, vocês, eles, elas',
+        theory: [
+          { type: 'text', content: '<strong>Eu</strong> = yo. <strong>Você</strong> = tú/usted. <strong>Ele</strong> = él, <strong>ela</strong> = ella. <strong>Nós</strong> = nosotros. <strong>Vocês</strong> = ustedes. <strong>Eles</strong> = ellos, <strong>elas</strong> = ellas.' },
+          { type: 'text', content: 'En portugués a menudo se omite el pronombre porque la terminación del verbo ya indica quién habla.' }
+        ],
+        examples: [
+          { pt: 'Eu falo.', es: 'Hablo.', note: 'sujeto explícito' },
+          { pt: 'Falo português.', es: '(Yo) hablo portugués.', note: 'sujeto omitido' },
+          { pt: 'Eles são amigos.', es: 'Son amigos.', note: 'ellos (masculino o mixto)' },
+          { pt: 'Elas são amigas.', es: 'Son amigas.', note: 'ellas (solo femenino)' }
+        ],
+        pronunciation: 'Nós se pronuncia como "nus" con s suave.',
+        exercise: {
+          q: '¿Cuál pronombre es "nosotros"?',
+          options: ['eu','vocês','nós','eles'],
+          answer: 2,
+          explain: 'Nós = nosotros.'
+        }
+      },
+      {
+        id: 'l21', title: 'Pronombres posesivos: meu, minha, teu, tua',
+        sub: 'mi, tu, su, nuestro',
+        theory: [
+          { type: 'text', content: '<strong>Meu/minha</strong> = mi/mío. <strong>Teu/tua</strong> = tu/tuy (informal). <strong>Seu/sua</strong> = su/suy (de você/ele/ela). Concuerdan en género con lo poseído, no con quien posee.' },
+          { type: 'text', content: 'Plural: meus/minhas, teus/tuas, seus/suas.' }
+        ],
+        examples: [
+          { pt: 'meu livro', es: 'mi libro', note: 'masculino' },
+          { pt: 'minha caneta', es: 'mi pluma', note: 'femenino' },
+          { pt: 'seu celular', es: 'su celular', note: 'su (de você)' },
+          { pt: 'nossa casa', es: 'nuestra casa', note: 'posesivo de nós' }
+        ],
+        pronunciation: 'Meu suena como "meu" (u suave), nasal al final en algunos acentos.',
+        exercise: {
+          q: '¿Cómo dices "mi pluma" (femenino)?',
+          options: ['meu livro','minha caneta','seu celular','nossa casa'],
+          answer: 1,
+          explain: 'Minha = mi (femenino), caneta = pluma.'
+        }
+      }
+    ]
+  },
+  {
+    id: 'm7', title: 'Módulo 7: Preguntas y vocabulario útil',
+    color: '#4527a0',
+    lessons: [
+      {
+        id: 'l22', title: 'Palabras interrogativas',
+        sub: 'qué, cómo, cuándo, dónde, por qué, quién',
+        theory: [
+          { type: 'text', content: '<strong>O que</strong> = qué. <strong>Como</strong> = cómo. <strong>Onde</strong> = dónde. <strong>Quando</strong> = cuándo. <strong>Por que/por qué</strong> = por qué. <strong>Quem</strong> = quién.' },
+          { type: 'text', content: 'En preguntas, el verbo suele ir antes del sujeto: "Onde você está?" = ¿Dónde estás?'. }
+        ],
+        examples: [
+          { pt: 'O que é isso?', es: '¿Qué es esto?', note: 'qué' },
+          { pt: 'Onde você mora?', es: '¿Dónde vives?', note: 'dónde' },
+          { pt: 'Quando você chega?', es: '¿Cuándo llegas?', note: 'cuándo' },
+          { pt: 'Quem é ela?', es: '¿Quién es ella?', note: 'quién' }
+        ],
+        pronunciation: 'Onde suena como "onji" (d suave como j francesa).',
+        exercise: {
+          q: '¿Qué significa "Onde"?',
+          options: ['qué','cuándo','dónde','quién'],
+          answer: 2,
+          explain: 'Onde = dónde.'
+        }
+      },
+      {
+        id: 'l23', title: 'Números del 1 al 100',
+        sub: 'contar en portugués',
+        theory: [
+          { type: 'text', content: '1 um/uma, 2 dois/duas, 3 três, 4 quatro, 5 cinco, 6 seis, 7 sete, 8 oito, 9 nove, 10 dez.' },
+          { type: 'text', content: '11 onze, 12 doze, 13 treze, 14 catorze, 15 quinze, 16 dezesseis, 17 dezessete, 18 dezoito, 19 dezenove, 20 vinte.' },
+          { type: 'text', content: 'Las decenas: 30 trinta, 40 quarenta, 50 cinquenta, 60 sessenta, 70 setenta, 80 oitenta, 90 noventa, 100 cem/cento.' }
+        ],
+        examples: [
+          { pt: 'um', es: 'uno', note: '' },
+          { pt: 'dois', es: 'dos', note: 'masc.' },
+          { pt: 'duas', es: 'dos', note: 'fem.' },
+          { pt: 'vinte e um', es: 'veintiuno', note: '21' }
+        ],
+        pronunciation: 'Três suena como "trèis" (nasal). Seis = "seis". Sete = "seti".',
+        exercise: {
+          q: '¿Cómo se dice "dos" (femenino)?',
+          options: ['dois','duas','dez','doze'],
+          answer: 1,
+          explain: 'Duas es dos en femenino.'
+        }
+      },
+      {
+        id: 'l24', title: 'Palabras para la vida real',
+        sub: 'comida, familia, lugares, transporte',
+        theory: [
+          { type: 'text', content: 'Comida: <strong>pão</strong> pan, <strong>café</strong> café, <strong>leite</strong> leche, <strong>fruta</strong> fruta, <strong>água</strong> agua.' },
+          { type: 'text', content: 'Lugares: <strong>casa</strong> casa, <strong>escola</strong> escuela, <strong>trabalho</strong> trabajo, <strong>supermercado</strong> supermercado.' },
+          { type: 'text', content: 'Familia: <strong>mãe</strong> madre, <strong>pai</strong> padre, <strong>filho/filha</strong> hijo/hija.' }
+        ],
+        examples: [
+          { pt: 'Quero água.', es: 'Quiero agua.', note: 'querer = querer' },
+          { pt: 'Onde é o banheiro?', es: '¿Dónde está el baño?', note: 'útil en viajes' },
+          { pt: 'Quanto custa?', es: '¿Cuánto cuesta?', note: 'compras' }
+        ],
+        pronunciation: 'Água suena como "água" nasal (a-gua). Banheiro = baño.',
+        exercise: {
+          q: '¿Qué significa "mãe"?',
+          options: ['padre','madre','hijo','hermano'],
+          answer: 1,
+          explain: 'Mãe = madre (nasal).'
+        }
+      }
+    ]
+  }
+];
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+const STORAGE_KEY = 'portugues_curso_v1';
+let state = {
+  completedLessons: [],   // ids de lecciones aprobadas
+  currentLessonId: null   // id de la lección en curso
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      state.completedLessons = parsed.completedLessons || [];
+      state.currentLessonId = parsed.currentLessonId || null;
+    }
+  }catch(e){}
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+// Aplanar todas las lecciones con su módulo
+function allLessons(){
+  const out = [];
+  MODULES.forEach(m => {
+    m.lessons.forEach(l => out.push({ ...l, module: m }));
+  });
+  return out;
+}
+const LESSONS = allLessons();
+
+function lessonIndex(id){
+  return LESSONS.findIndex(l => l.id === id);
+}
+function findLesson(id){
+  return LESSONS.find(l => l.id === id);
+}
+function isCompleted(id){ return state.completedLessons.includes(id); }
+function isUnlocked(id){
+  const i = lessonIndex(id);
+  if(i === 0) return true; // primera siempre desbloqueada
+  const prev = LESSONS[i-1];
+  return isCompleted(prev.id);
+}
+function nextLessonId(id){
+  const i = lessonIndex(id);
+  return i < LESSONS.length - 1 ? LESSONS[i+1].id : null;
+}
+function prevLessonId(id){
+  const i = lessonIndex(id);
+  return i > 0 ? LESSONS[i-1].id : null;
+}
+function totalCompletedPercent(){
+  if(LESSONS.length === 0) return 0;
+  return Math.round((state.completedLessons.length / LESSONS.length) * 100);
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const el = id => document.getElementById(id);
+
+function renderHome(){
+  const list = el('planList');
+  list.innerHTML = '';
+  MODULES.forEach(m => {
+    const li = document.createElement('li');
+    li.textContent = m.title;
+    list.appendChild(li);
+  });
+  el('progressFill').style.width = totalCompletedPercent() + '%';
+}
+
+function renderLesson(id){
+  const lesson = findLesson(id);
+  if(!lesson) return;
+  state.currentLessonId = id;
+  saveState();
+
+  el('home').classList.add('hidden');
+  el('lessonView').classList.remove('hidden');
+
+  const meta = lesson.module.title.replace('Módulo ','Módulo ') + ' · Lección ' + (lessonIndex(id)+1) + ' de ' + LESSONS.length;
+  el('lessonMeta').textContent = meta;
+  el('lessonTitle').textContent = lesson.title;
+  el('lessonSub').textContent = lesson.sub;
+
+  const unlocked = isUnlocked(id);
+  const done = isCompleted(id);
+
+  // Botones de navegación
+  el('btnPrev').disabled = lessonIndex(id) === 0;
+  el('btnNext').disabled = !done;
+  el('lockHint').style.display = done ? 'none' : (unlocked ? 'block' : 'none');
+
+  // Contenido teórico
+  const content = el('lessonContent');
+  content.innerHTML = '';
+
+  lesson.theory.forEach(t => {
+    const p = document.createElement('p');
+    p.innerHTML = t.content;
+    content.appendChild(p);
+  });
+
+  // Ejemplos
+  if(lesson.examples && lesson.examples.length){
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = '<h4><span>Ejemplos de la vida real</span></h4>';
+    lesson.examples.forEach(ex => {
+      const div = document.createElement('div');
+      div.className = 'example';
+      const escPt = String(ex.pt).replace(/'/g, "\\'");
+      div.innerHTML = `<span class="pt">${ex.pt}</span> <button class="audio-btn" onclick="speak('${escPt}', 'pt-BR')">🔊</button> <span class="es">${ex.es}</span>${ex.note ? `<br><small style="color:var(--muted)">${ex.note}</small>` : ''}`;
+      sec.appendChild(div);
+    });
+    content.appendChild(sec);
+  }
+
+  // Pronunciación
+  if(lesson.pronunciation){
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = '<h4><span>🗣️ Consejo de pronunciación</span></h4><div class="pron"><strong>Tip:</strong> ' + lesson.pronunciation + ' <button class="audio-btn" onclick="speak(' + JSON.stringify(lesson.pronunciation) + ', \'pt-BR\')">🔊</button></div>';
+    content.appendChild(sec);
+  }
+
+  // Tips adicionales opcionales
+  if(lesson.tip){
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = '<h4><span>💡 Tip</span></h4><div class="tip">' + lesson.tip + '</div>';
+    content.appendChild(sec);
+  }
+
+  // Ejercicio
+  const exBox = el('exerciseBox');
+  const exOptions = el('exOptions');
+  const exFeedback = el('exFeedback');
+  const exExplain = el('exExplain');
+
+  if(done){
+    exBox.style.display = 'block';
+    exQuestionRender(lesson, exOptions, true);
+    exFeedback.style.display = 'block';
+    exFeedback.className = 'feedback ok';
+    exFeedback.textContent = '✅ Lección completada correctamente.';
+    exExplain.style.display = 'block';
+    exExplain.textContent = lesson.exercise.explain;
+    el('lockHint').style.display = 'none';
+  } else if(unlocked){
+    exBox.style.display = 'block';
+    exFeedback.style.display = 'none';
+    exExplain.style.display = 'none';
+    exQuestionRender(lesson, exOptions, false);
+  } else {
+    exBox.style.display = 'none';
+  }
+}
+
+let selectedOption = null;
+
+function exQuestionRender(lesson, container, review){
+  container.innerHTML = '';
+  el('exQuestion').textContent = lesson.exercise.q;
+  lesson.exercise.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'opt' + (review ? ' disabled' : '');
+    div.innerHTML = `<span class="letter">${String.fromCharCode(65+i)}.</span> <span class="text">${opt}</span>`;
+    if(!review){
+      div.onclick = () => selectOption(i, lesson);
+    } else {
+      if(i === lesson.exercise.answer) div.classList.add('correct');
+    }
+    container.appendChild(div);
+  });
+}
+
+function selectOption(idx, lesson){
+  if(selectedOption !== null) return;
+  selectedOption = idx;
+  const correct = lesson.exercise.answer;
+  const opts = el('exOptions').children;
+  const fb = el('exFeedback');
+  const exp = el('exExplain');
+
+  // marcar visualmente
+  Array.from(opts).forEach((o, i) => {
+    o.classList.add('disabled');
+    if(i === correct) o.classList.add('correct');
+    if(i === idx && i !== correct) o.classList.add('wrong');
+  });
+
+  fb.style.display = 'block';
+  exp.style.display = 'block';
+  exp.textContent = lesson.exercise.explain;
+
+  if(idx === correct){
+    fb.className = 'feedback ok';
+    fb.textContent = '✅ ¡Correcto! Has comprendido la lección.';
+    // marcar completada y guardar
+    if(!state.completedLessons.includes(lesson.id)){
+      state.completedLessons.push(lesson.id);
+      saveState();
+      el('progressFill').style.width = totalCompletedPercent() + '%';
+      showToast('Lección completada');
+    }
+    el('btnNext').disabled = false;
+    el('lockHint').style.display = 'none';
+  } else {
+    fb.className = 'feedback bad';
+    fb.textContent = '❌ No es correcto. Inténtalo de nuevo.';
+    // permitir reintentar: desmarcar selección tras un breve momento
+    setTimeout(()=>{
+      selectedOption = null;
+      Array.from(opts).forEach(o => {
+        o.classList.remove('disabled','correct','wrong');
+      });
+      fb.style.display = 'none';
+      exp.style.display = 'none';
+    }, 900);
+  }
+}
+
+/* ============================================================
+   MODAL DE COMPLETACIÓN
+   ============================================================ */
+const modal = el('completeModal');
+const modalTitle = el('modalTitle');
+const modalText = el('modalText');
+
+function openModal(title, text){
+  modalTitle.textContent = title;
+  modalText.textContent = text;
+  modal.classList.add('open');
+}
+function closeModal(){ modal.classList.remove('open'); }
+
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+el('btnStart').addEventListener('click', () => {
+  // si hay una lección actual y está desbloqueada, ir a ella; si no, a la primera
+  let target = state.currentLessonId;
+  if(!target || !isUnlocked(target)) target = LESSONS[0].id;
+  renderLesson(target);
+});
+
+el('btnBackHome').addEventListener('click', () => {
+  el('lessonView').classList.add('hidden');
+  el('home').classList.remove('hidden');
+  renderHome();
+});
+
+el('btnPrev').addEventListener('click', () => {
+  const id = prevLessonId(state.currentLessonId);
+  if(id) renderLesson(id);
+});
+
+el('btnNext').addEventListener('click', () => {
+  const id = nextLessonId(state.currentLessonId);
+  if(!id){
+    // curso terminado
+    openModal('¡Curso completado! 🎉', 'Has terminado todas las lecciones. ¡Ya sabes lo básico del portugués!');
+    return;
+  }
+  renderLesson(id);
+});
+
+el('modalContinue').addEventListener('click', () => {
+  closeModal();
+  const id = nextLessonId(state.currentLessonId);
+  if(id) renderLesson(id);
+});
+el('modalHome').addEventListener('click', () => {
+  closeModal();
+  el('lessonView').classList.add('hidden');
+  el('home').classList.remove('hidden');
+  renderHome();
+});
+
+// Cerrar modal al hacer clic fuera
+modal.addEventListener('click', (e) => {
+  if(e.target === modal) closeModal();
+});
+
+/* Toast */
+function showToast(msg){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(() => t.remove(), 300);
+  }, 2200);
+}
+
+
+
+/* ============================================================
+   AUDIO DE PRONUNCIACIÓN (portugués de Brasil)
+   ============================================================ */
+let synth = window.speechSynthesis;
+let speaking = false;
+
+function speak(text, lang = 'pt-BR') {
+  if (!text) return;
+  if (speaking) { synth.cancel(); speaking = false; }
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang;
+  utterance.rate = 0.9;
+  utterance.onstart = () => { speaking = true; };
+  utterance.onend = () => { speaking = false; };
+  utterance.onerror = () => { speaking = false; };
+  synth.speak(utterance);
+}
+
+/* ============================================================
+   SERVICE WORKER + INSTALACIÓN PWA
+   ============================================================ */
+let deferredPrompt = null;
+
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('SW registrado'))
+      .catch(err => console.log('Error SW:', err));
+  }
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = el('installBanner');
+  if (banner) banner.classList.remove('hidden');
+});
+
+el('btnInstall')?.addEventListener('click', () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      const banner = el('installBanner');
+      if (banner) banner.classList.add('hidden');
+      showToast('¡Aplicación instalada!');
+    }
+    deferredPrompt = null;
+  });
+});
+
+registerSW();
+
+/* Inicializar */
+loadState();
+renderHome();
+</script>
+</body>
+</html>
